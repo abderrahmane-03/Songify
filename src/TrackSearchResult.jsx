@@ -1,14 +1,21 @@
+import React from "react"
+
 export default function TrackSearchResult({ track, chooseTrack }) {
-    function handlePlay() {
-        chooseTrack(track)
-    }
-    return (
-        <div className="flex items-center m-2" onClick={handlePlay}>
-            <img src={track.albumUri} className="h-[64px] w-[64px] cursor-pointer " alt={track.title} />
-            <div className="ml-3">
-                <div>{track.title}</div>
-                <div><small>{track.artist}</small></div>
-            </div>
-        </div>
-    );
+  function handlePlay() {
+    chooseTrack(track)
+  }
+
+  return (
+    <div
+      className="d-flex m-2 align-items-center"
+      style={{ cursor: "pointer" }}
+      onClick={handlePlay}
+    >
+      <img src={track.albumUrl} style={{ height: "64px", width: "64px" }} />
+      <div className="ml-3">
+        <div>{track.title}</div>
+        <div className="text-muted">{track.artist}</div>
+      </div>
+    </div>
+  )
 }
