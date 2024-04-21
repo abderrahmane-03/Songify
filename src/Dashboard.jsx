@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import useAuth from "./useAuth";
 import Player from "./Player";
 import TrackSearchResult from "./TrackSearchResult";
-import { Container, Form } from "react-bootstrap";
+import { Container} from "react-bootstrap";
 import SpotifyWebApi from "spotify-web-api-node";
 import axios from "axios";
 import PropTypes from "prop-types";
 import logo from "../public/assets/logo.png";
-import './Dashboard.css';
+import "./style.css"
 
 Dashboard.propTypes = {
   code: PropTypes.string.isRequired,
@@ -100,55 +100,43 @@ export default function Dashboard({ code }) {
   }, [search, accessToken]);
 
   return (
-    <Container className="d-flex flex-column py-2" style={{ height: "100vh" }}>
-      <div className="sidebar">
-        <div className="logo">
-          <a href="#">
-            <img
-              src={logo}
-              alt="Logo"
-              className="img-fluid"
-            />
-          </a>
-        </div>
-        <Form.Control
-          type="search"
-          placeholder="Search Songs/Artists"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+    <Container className="flex flex-col bg-gradient-to-b from-green-600 to-green-800 text-white min-h-screen">
+  <div className="sidebar flex-grow p-4">
+    <div className="logo mb-8">
+      <a href="#">
+        <img
+          src={logo}
+          alt="Logo"
+          className="rounded-md w-44 h-auto"
         />
-        <div className="flex-grow-1 my-2" style={{ overflowY: "auto" }}>
-          {searchResults.map((track) => (
-            <TrackSearchResult
-              track={track}
-              key={track.uri}
-              chooseTrack={chooseTrack}
-            />
-          ))}
-          {searchResults.length === 0 && (
-            <div className="text-center" style={{ whiteSpace: "pre" }}>
-              {lyrics}
-            </div>
-          )}
-        </div>
-        <div>
-          <Player accessToken={accessToken} trackUri={playingTrack?.uri} />
-        </div>
-        <div className="policies">
-          <ul className="nav flex-column">
-            <li className="nav-item">
-              <a className="nav-link" href="#">
-                Cookies
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#">
-                Privacy
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </Container>
+      </a>
+    </div>
+    <div className="input-container">
+  <input type="search" name="text" value={search} className="input text-black" onChange={(e) => setSearch(e.target.value)} placeholder="search..."/>
+  <span className="icon"> 
+    <svg width="19px" height="19px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="1" d="M14 5H20" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path> <path opacity="1" d="M14 8H17" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path> <path d="M21 11.5C21 16.75 16.75 21 11.5 21C6.25 21 2 16.75 2 11.5C2 6.25 6.25 2 11.5 2" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"></path> <path opacity="1" d="M22 22L20 20" stroke="#000" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
+  </span>
+</div>
+    
+    <div className="overflow-y-auto my-4">
+      {searchResults.length ? (
+        searchResults.map((track) => (
+          <TrackSearchResult
+            track={track}
+            key={track.uri}
+            chooseTrack={chooseTrack}
+          />
+        ))
+      ) : (
+        <div className="text-center whitespace-pre">{lyrics}</div>
+      )}
+    </div>
+    <div className="rounded-3xl mt-auto">
+      <Player accessToken={accessToken} trackUri={playingTrack?.uri} />
+    </div>
+  
+  </div>
+</Container>
+
   );
 }
