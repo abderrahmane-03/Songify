@@ -5,10 +5,15 @@ import TrackSearchResult from "./TrackSearchResult"
 import { Container, Form } from "react-bootstrap"
 import SpotifyWebApi from "spotify-web-api-node"
 import axios from "axios"
+import PropTypes from 'prop-types';
 
+Dashboard.propTypes = {
+  code: PropTypes.string.isRequired
+};
 const spotifyApi = new SpotifyWebApi({
   clientId: "512a27e957f64618bc90c0433245902d",
 })
+
 
 export default function Dashboard({ code }) {
   const accessToken = useAuth(code)
