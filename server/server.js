@@ -12,31 +12,24 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Initialize Spotify Web API with credentials
+const spotifyApi = new SpotifyWebApi({
+    redirectUri: process.env.REDIRECT_URI,
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+});
+
+// Route to handle token refresh
 app.post("/refresh", async(req, res) => {
     const refreshToken = req.body.refreshToken;
-    const clientId = process.env.CLIENT_ID;
-    const clientSecret = process.env.CLIENT_SECRET;
-    const url = "https://accounts.spotify.com/api/token";
-
-    const payload = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + Buffer.from(clientId + ':' + clientSecret).toString('base64')
-        },
-        body: new URLSearchParams({
-            'grant_type': 'refresh_token',
-            'refresh_token': refreshToken
-        }),
-    };
 
     try {
-        const response = await fetch(url, payload);
-        const data = await response.json();
-
+        const data = await spotifyApi.refreshAccessToken();
+        const accessToken = data.body.access_token;
+        const expiresIn = data.body.expires_in;
         res.json({
-            accessToken: data.access_token,
-            expiresIn: data.expires_in
+            accessToken: accessToken,
+            expiresIn: expiresIn,
         });
     } catch (error) {
         console.log("Error refreshing token:", error);
@@ -44,33 +37,34 @@ app.post("/refresh", async(req, res) => {
     }
 });
 
-
+// Route to handle user login
 app.post("/login", (req, res) => {
-    const code = req.body.code
-    const spotifyApi = new SpotifyWebApi({
-        redirectUri: process.env.REDIRECT_URI,
-        clientId: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-    })
+    const code = req.body.code;
 
     spotifyApi
         .authorizationCodeGrant(code)
-        .then(data => {
+        .then((data) => {
             res.json({
                 accessToken: data.body.access_token,
                 refreshToken: data.body.refresh_token,
                 expiresIn: data.body.expires_in,
-            })
+            });
         })
-        .catch(err => {
-            res.sendStatus(400)
-        })
-})
+        .catch((err) => {
+            console.error("Error logging in:", err);
+            res.sendStatus(400);
+        });
+});
 
+// Route to fetch lyrics
 app.get("/lyrics", async(req, res) => {
     const lyrics =
-        (await lyricsFinder(req.query.artist, req.query.track)) || "No Lyrics Found"
-    res.json({ lyrics })
-})
+        (await lyricsFinder(req.query.artist, req.query.track)) || "No Lyrics Found";
+    res.json({ lyrics });
+});
 
-app.listen(3001)
+// Start the server
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

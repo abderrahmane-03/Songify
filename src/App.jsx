@@ -1,4 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css"
+
+import "../styles.css";
+
 import Login from "./Login"
 import Dashboard from "./Dashboard"
 
